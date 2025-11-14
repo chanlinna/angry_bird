@@ -351,8 +351,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8c87750e9624a4ebd6726715ead628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredImpactForce: 50
-  health: 100
+  maxHealth: 100
+  minImpactForceToDamage: 1
+  damageMultiplier: 10
+  deathSoundClip: {fileID: 8300000, guid: 6522ef4e40403ff4fa566764bd0ca042, type: 3}
 --- !u!1 &451565001
 GameObject:
   m_ObjectHideFlags: 0
@@ -2109,8 +2111,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8c87750e9624a4ebd6726715ead628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredImpactForce: 50
-  health: 100
+  maxHealth: 100
+  minImpactForceToDamage: 1
+  damageMultiplier: 10
+  deathSoundClip: {fileID: 8300000, guid: 6522ef4e40403ff4fa566764bd0ca042, type: 3}
 --- !u!1 &2041937035
 GameObject:
   m_ObjectHideFlags: 0
