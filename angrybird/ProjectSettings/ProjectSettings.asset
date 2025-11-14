@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 26
-  productGUID: 90fe016e7d40741ecb554394209b024b
+  productGUID: 8705427d3378947589ce8976dcfd9751
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -706,10 +706,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: ce404505-5232-494b-9e5b-d72e8866c879
+  cloudProjectId: 7e39c21d-5842-4210-93a7-7d31622bf3a3
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: angrybird
+  projectName: angrybird 2025-11-14_18-05-40
   organizationId: chanlinnalin
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
