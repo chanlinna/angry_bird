@@ -83,6 +83,9 @@ public class Pig : MonoBehaviour
     public float minImpactForceToDamage = 1.0f;
     public float damageMultiplier = 10f;
 
+    [Header("Death Effect")]
+    public GameObject deathEffectPrefab;
+
     private float currentHealth;
     private bool isDead = false;
 
@@ -138,10 +141,13 @@ public class Pig : MonoBehaviour
         // Play sound
         if (audioSource && deathSoundClip) audioSource.PlayOneShot(deathSoundClip);
 
-        // Optional: Spawn particle effect here
+        // Spawn death effect
+        if (deathEffectPrefab)
+            Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
 
         // Destroy after sound finishes
         float delay = deathSoundClip ? deathSoundClip.length : 0f;
         Destroy(gameObject, delay);
     }
+    
 }

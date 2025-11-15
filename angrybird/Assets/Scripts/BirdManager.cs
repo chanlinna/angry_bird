@@ -70,4 +70,9 @@ public class BirdManager : MonoBehaviour
             Debug.Log("All birds used! Level over.");
         }
     }
+    public bool AllBirdsUsed()
+    {
+        return currentBirdIndex >= birds.Length;
+    }
+
 }
