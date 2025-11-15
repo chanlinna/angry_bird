@@ -1,119 +1,118 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Bird : MonoBehaviour
 {
     [Header("Launch Settings")]
-    [Tooltip("Multiplier for the force applied during launch.")]
-    public float launchForceMultiplier = 200f;
-
-    [Tooltip("The maximum distance the bird can be pulled from its starting position.")]
+    public float launchForceMultiplier = 20f;
     public float maxPullDistance = 1.8f;
 
     [Header("Game Constraints")]
-    [Tooltip("The lowest Y-coordinate the bird can be dragged to (the top of the ground collider).")]
     public float minYBoundary = -1.5f;
 
     [Header("References")]
-    [Tooltip("The static point the slingshot pulls from.")]
     public Transform slingshotAnchor;
-
-    [Tooltip("The colliders of the slingshot posts, to be ignored during drag.")]
     public Collider2D[] slingshotColliders;
 
+    [HideInInspector]
+    public bool isCurrentBird = false; // Is this the bird currently at the slingshot?
+
     private Rigidbody2D rb;
-    private Vector2 initialPosition;
-    private bool hasBeenLaunched = false;
     private Collider2D birdCollider;
+    private bool hasBeenLaunched = false;
+    private bool nextBirdCalled = false;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         birdCollider = GetComponent<Collider2D>();
-
-        if (slingshotAnchor != null)
-        {
-            initialPosition = slingshotAnchor.position;
-            transform.position = initialPosition;
-        }
-        else
-        {
-            Debug.LogError("SlingshotAnchor is not assigned! Bird won't work correctly.");
-            initialPosition = transform.position;
-        }
-
         rb.isKinematic = true;
+    }
+
+    void OnEnable()
+    {
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.isKinematic = true;
+        hasBeenLaunched = false;
+        nextBirdCalled = false;
+
+        if (isCurrentBird && slingshotAnchor != null)
+            transform.position = slingshotAnchor.position;
     }
 
     private void OnMouseDown()
     {
-        if (hasBeenLaunched) return;
+        if (!isCurrentBird || hasBeenLaunched) return;
 
         rb.isKinematic = true;
 
-        foreach (Collider2D collider in slingshotColliders)
+        foreach (Collider2D col in slingshotColliders)
         {
-            if (collider != null)
-            {
-                Physics2D.IgnoreCollision(birdCollider, collider, true);
-            }
+            if (col != null)
+                Physics2D.IgnoreCollision(birdCollider, col, true);
         }
     }
 
-
     private void OnMouseDrag()
     {
-        if (hasBeenLaunched) return;
+        if (!isCurrentBird || hasBeenLaunched) return;
 
-        // Convert mouse position to world coordinates.
-        Vector3 mouseWorldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPoint.z = 0;
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorld.z = 0;
 
-        // Calculate direction and clamp to max pull distance.
-        Vector2 currentPosition = mouseWorldPoint;
-        Vector2 direction = currentPosition - initialPosition;
+        Vector2 direction = (Vector2)mouseWorld - (Vector2)slingshotAnchor.position;
 
         if (direction.magnitude > maxPullDistance)
-        {
             direction = direction.normalized * maxPullDistance;
-            currentPosition = initialPosition + direction;
-        }
 
-        // APPLY GROUND CLAMPING LOGIC
-        if (currentPosition.y < minYBoundary)
-        {
-            currentPosition.y = minYBoundary;
-        }
+        Vector2 currentPos = (Vector2)slingshotAnchor.position + direction;
 
-        transform.position = currentPosition;
+        if (currentPos.y < minYBoundary)
+            currentPos.y = minYBoundary;
+
+        transform.position = currentPos;
     }
 
     private void OnMouseUp()
     {
-        if (hasBeenLaunched) return;
+        if (!isCurrentBird || hasBeenLaunched) return;
 
-
-        foreach (Collider2D collider in slingshotColliders)
+        foreach (Collider2D col in slingshotColliders)
         {
-            if (collider != null)
-            {
-                Physics2D.IgnoreCollision(birdCollider, collider, false);
-            }
+            if (col != null)
+                Physics2D.IgnoreCollision(birdCollider, col, false);
         }
 
-        // Calculate the launch vector (opposite of the drag direction).
-        Vector2 launchDirection = initialPosition - (Vector2)transform.position;
-
-        // Launch the bird.
+        Vector2 launchVector = (Vector2)slingshotAnchor.position - (Vector2)transform.position;
         rb.isKinematic = false;
         hasBeenLaunched = true;
 
-        rb.AddForce(launchDirection * launchForceMultiplier, ForceMode2D.Impulse);
-
+        rb.AddForce(launchVector * launchForceMultiplier, ForceMode2D.Impulse);
     }
 
-    private void CheckStop()
+    void Update()
     {
-        
+        // Trigger next bird only once
+        if (isCurrentBird && hasBeenLaunched && !nextBirdCalled && rb.velocity.magnitude <= 0.1f)
+        {
+            nextBirdCalled = true;
+            BirdManager.Instance.BirdFinished();
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Offscreen or wall stops current bird
+        if (isCurrentBird && collision.gameObject.CompareTag("OffscreenWall"))
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+
+            if (!nextBirdCalled)
+            {
+                nextBirdCalled = true;
+                BirdManager.Instance.BirdFinished();
+            }
+        }
     }
 }
