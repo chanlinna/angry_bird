@@ -43,6 +43,6 @@ public class PauseManager : MonoBehaviour
         // Must reset time scale before loading the next scene!
         Time.timeScale = 1f;
 
-        SceneManager.LoadScene("StartMenu");
+        SceneManager.LoadScene("SeasonSelectScene");
     }
 }

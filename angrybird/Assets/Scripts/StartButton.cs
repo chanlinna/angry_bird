@@ -5,6 +5,6 @@ public class StartButton : MonoBehaviour
 {
     public void PlayGame()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("SeasonSelectScene");
     }
 }
